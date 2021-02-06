@@ -27,7 +27,7 @@ class MoviesRepository(private val moviesDatabase: MoviesDatabase) {
             }
             //this will be executed when above finishes
             withContext(Dispatchers.Main) {
-                Log.d("inside main",""+list.get(0))
+                Log.d("inside main",""+list)
                 callback.getMovies(list)
             }
         }

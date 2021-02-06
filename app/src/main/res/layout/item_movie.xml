@@ -22,15 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/movie_poster"
-            app:layout_constraintStart_toStartOf="@+id/movie_poster"
-            app:layout_constraintTop_toBottomOf="@+id/movie_poster"
-            app:layout_constraintBottom_toBottomOf="@+id/movie_poster"
-            tools:text="abccccccc"/>
+
 
         <TextView
             android:id="@+id/title"
@@ -49,14 +41,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/language"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_normal"
             android:layout_marginBottom="@dimen/spacing_normal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/language"/>
-
-
+            app:layout_constraintTop_toBottomOf="@+id/rating"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

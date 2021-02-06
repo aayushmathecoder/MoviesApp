@@ -4,25 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sample.moviesapp.R
-import com.sample.moviesapp.data.network.ApiHelper
-import com.sample.moviesapp.data.network.RetrofitBuilder
 import com.sample.moviesapp.databinding.FragmentMoviesListBinding
-import com.sample.moviesapp.utils.Status
+import com.sample.moviesapp.model.Movie
 import com.sample.moviesapp.viewmodel.MoviesViewModel
 import com.sample.moviesapp.viewmodel.ViewModelFactory
+
 
 class MoviesListFragment : Fragment() {
 
     private var moviesAdapter: MoviesAdapter? = null
     private var binding: FragmentMoviesListBinding? = null
     private lateinit var moviesViewModel: MoviesViewModel
+    private var moviesList: List<Movie> ? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +46,9 @@ class MoviesListFragment : Fragment() {
         binding?.moviesListRecyclerview?.layoutManager = LinearLayoutManager(context)
         binding?.moviesListRecyclerview?.adapter = moviesAdapter
         moviesViewModel.movieLiveData?.observe(activity as MainActivity, Observer {
-            moviesAdapter?.setList(it)
+           // moviesAdapter?.setList(it)
+            moviesAdapter?.addAll(it)
+            moviesList = it
             moviesAdapter?.notifyDataSetChanged()
         })
     }
@@ -65,6 +69,34 @@ class MoviesListFragment : Fragment() {
         initViewModel()
         initUI()
         fetchData()
+        prepareSpinner()
+    }
+
+    private fun prepareSpinner() {
+        val properties = arrayOf("Popularity", "Rating", "Name", "Views")
+
+        binding?.propertySpinner?.adapter = context?.let {
+            ArrayAdapter(
+                it, android.R.layout.simple_dropdown_item_1line,
+                properties
+            )
+        }
+
+        binding?.propertySpinner?.setOnItemSelectedListener(object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                val SELECTED_PROPERTY = properties[position]
+                moviesAdapter?.sort(true, SELECTED_PROPERTY)
+                moviesList?.let { moviesAdapter?.addAll(it) }
+                moviesAdapter?.notifyDataSetChanged()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        })
     }
 
     companion object {
