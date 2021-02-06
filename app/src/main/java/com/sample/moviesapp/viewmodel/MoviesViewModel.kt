@@ -1,19 +1,26 @@
 package com.sample.moviesapp.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
+import com.sample.moviesapp.data.repository.MoviesRepository
+import com.sample.moviesapp.data.repository.getDatabase
 import com.sample.moviesapp.model.Movie
+import com.sample.moviesapp.utils.Callback
 
-class MoviesViewModel : ViewModel() {
+class MoviesViewModel(application: Application) : AndroidViewModel(application) {
+    val movieLiveData: MutableLiveData<List<Movie>>? = MutableLiveData()
+    private val database= getDatabase(application)
+    private val moviesRepository = MoviesRepository(database)
 
-   private val movieMutableLiveData : MutableLiveData<Movie> ? =null
-   private val movieLiveData : LiveData<Movie> ? =null
-
-    fun getMovies() : LiveData<Movie>? {
-
-        return movieLiveData
+    fun getMoviesDb()  {
+         moviesRepository.getMoviesFromDb(object : Callback {
+             override fun getMovies(list: List<Movie>) {
+                movieLiveData?.postValue(list)
+             }
+         })
     }
 
-
+    fun getMoviesLiveData(): MutableLiveData<List<Movie>>? {
+        return movieLiveData
+    }
 }

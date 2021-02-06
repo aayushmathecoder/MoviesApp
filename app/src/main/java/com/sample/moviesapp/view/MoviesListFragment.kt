@@ -11,11 +11,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sample.moviesapp.R
+import com.sample.moviesapp.data.network.ApiHelper
+import com.sample.moviesapp.data.network.RetrofitBuilder
 import com.sample.moviesapp.databinding.FragmentMoviesListBinding
+import com.sample.moviesapp.utils.Status
 import com.sample.moviesapp.viewmodel.MoviesViewModel
+import com.sample.moviesapp.viewmodel.ViewModelFactory
 
-class MoviesListFragment : Fragment(){
+class MoviesListFragment : Fragment() {
 
+    private var moviesAdapter: MoviesAdapter? = null
     private var binding: FragmentMoviesListBinding? = null
     private lateinit var moviesViewModel: MoviesViewModel
 
@@ -31,35 +36,41 @@ class MoviesListFragment : Fragment(){
             false
         )
 
-        initViewModel()
-        initUI()
-        fetchData()
         return binding!!.root
     }
 
     private fun initUI() {
-        binding?.moviesListRecyclerview?.layoutManager  = LinearLayoutManager(context)
-        //todo:
-       // binding?.moviesListRecyclerview?.adapter =
-
-    }
-
-    private fun fetchData() {
-        moviesViewModel.getMovies()?.observe(viewLifecycleOwner, Observer {
-
-            //adapter.notifyDataChanged
-
-
+        moviesAdapter = context?.let { MoviesAdapter(it) }
+        binding?.moviesListRecyclerview?.layoutManager = LinearLayoutManager(context)
+        binding?.moviesListRecyclerview?.adapter = moviesAdapter
+        moviesViewModel.movieLiveData?.observe(activity as MainActivity, Observer {
+            moviesAdapter?.setList(it)
+            moviesAdapter?.notifyDataSetChanged()
         })
     }
 
+    private fun fetchData() {
+        moviesViewModel.getMoviesDb()
+    }
+
     private fun initViewModel() {
-        moviesViewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
+        moviesViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(activity!!.application)
+        ).get(MoviesViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+        initViewModel()
+        initUI()
+        fetchData()
+    }
+
+    companion object {
+        fun newInstance(): MoviesListFragment {
+            return MoviesListFragment()
+        }
     }
 
 }
