@@ -19,8 +19,4 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
              }
          })
     }
-
-    fun getMoviesLiveData(): MutableLiveData<List<Movie>>? {
-        return movieLiveData
-    }
 }

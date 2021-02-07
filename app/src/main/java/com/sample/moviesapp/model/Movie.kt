@@ -1,11 +1,14 @@
 package com.sample.moviesapp.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 @Entity(tableName = "movies")
-data class Movie(
+@Parcelize
+data class Movie (
     var adult: Boolean = false,
     var backdropPath: String? = null,
     @PrimaryKey
@@ -29,4 +32,4 @@ data class Movie(
     var voteAverage: Double? = null,
     @SerializedName("vote_count")
     var voteCount: Double? = null
-)
+) : Parcelable

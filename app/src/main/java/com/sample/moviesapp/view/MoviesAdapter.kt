@@ -12,7 +12,7 @@ import com.sample.moviesapp.databinding.ItemMovieBinding
 import com.sample.moviesapp.model.Movie
 
 
-class MoviesAdapter constructor(private val context: Context ) :
+class MoviesAdapter constructor(private val context: Context, private val onItemClickListener1: OnItemClickListener) :
     RecyclerView.Adapter<MoviesAdapter.MovieHolder>() {
 
     private lateinit var binding: ItemMovieBinding
@@ -22,7 +22,7 @@ class MoviesAdapter constructor(private val context: Context ) :
         binding =
             DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.item_movie, parent, false)
 
-        return MovieHolder(binding, context)
+        return MovieHolder(binding, context, onItemClickListener1)
     }
 
     override fun getItemCount(): Int {
@@ -30,7 +30,7 @@ class MoviesAdapter constructor(private val context: Context ) :
     }
 
     override fun onBindViewHolder(holder: MovieHolder, position: Int) {
-            holder.bindView(moviesList?.get(position))
+            holder.bindView(position,moviesList?.get(position))
 
 
     }
@@ -96,22 +96,34 @@ class MoviesAdapter constructor(private val context: Context ) :
     fun clear() {
         moviesList?.beginBatchedUpdates()
         //remove items at end, to avoid unnecessary array shifting
-        while (moviesList?.size()!! > 0 == true) {
+        while (moviesList?.size()!! > 0) {
             moviesList?.size()?.minus(1)?.let { moviesList?.removeItemAt(it) }
         }
         moviesList?.endBatchedUpdates()
     }
 
-    class MovieHolder(val binding: ItemMovieBinding, val context: Context) : RecyclerView.ViewHolder(binding.root) {
-        fun bindView(movie: Movie?) {
+    interface OnItemClickListener {
+        fun onItemClicked(movie: Movie?)
+    }
+
+    class MovieHolder(
+        private val binding: ItemMovieBinding,
+        val context: Context,
+        private val onItemClickListener1: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bindView(position: Int, movie: Movie?) {
             val imgUrl = "https://image.tmdb.org/t/p/w500${movie?.posterPath}"
             Glide.with(context)
                 .load(imgUrl)
-                .into(binding.moviePoster);
+                .into(binding.moviePoster)
             binding.title.text = movie?.title
             binding.rating.text = movie?.voteAverage.toString()
             binding.language.text = movie?.originalLanguage?.toUpperCase()
 
+
+            binding.root.setOnClickListener {
+                onItemClickListener1.onItemClicked(movie)
+            }
         }
 
     }

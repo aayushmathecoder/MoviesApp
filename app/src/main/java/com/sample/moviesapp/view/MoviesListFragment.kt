@@ -19,7 +19,7 @@ import com.sample.moviesapp.viewmodel.MoviesViewModel
 import com.sample.moviesapp.viewmodel.ViewModelFactory
 
 
-class MoviesListFragment : Fragment() {
+class MoviesListFragment : Fragment(), MoviesAdapter.OnItemClickListener {
 
     private var moviesAdapter: MoviesAdapter? = null
     private var binding: FragmentMoviesListBinding? = null
@@ -42,11 +42,11 @@ class MoviesListFragment : Fragment() {
     }
 
     private fun initUI() {
-        moviesAdapter = context?.let { MoviesAdapter(it) }
+        moviesAdapter = context?.let { MoviesAdapter(it, this) }
         binding?.moviesListRecyclerview?.layoutManager = LinearLayoutManager(context)
         binding?.moviesListRecyclerview?.adapter = moviesAdapter
+
         moviesViewModel.movieLiveData?.observe(activity as MainActivity, Observer {
-           // moviesAdapter?.setList(it)
             moviesAdapter?.addAll(it)
             moviesList = it
             moviesAdapter?.notifyDataSetChanged()
@@ -82,10 +82,10 @@ class MoviesListFragment : Fragment() {
             )
         }
 
-        binding?.propertySpinner?.setOnItemSelectedListener(object : OnItemSelectedListener {
+        binding?.propertySpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
-                view: View,
+                view: View?,
                 position: Int,
                 id: Long
             ) {
@@ -96,7 +96,7 @@ class MoviesListFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
-        })
+        }
     }
 
     companion object {
@@ -105,4 +105,14 @@ class MoviesListFragment : Fragment() {
         }
     }
 
+    override fun onItemClicked( movie: Movie?) {
+        val fragment = movie?.let { MoviesDetailsFragment.newInstance( it) }
+        if (fragment != null) {
+            activity!!.supportFragmentManager.
+            beginTransaction().
+            replace(R.id.container, fragment).
+            addToBackStack(null).
+            commit()
+        }
+    }
 }
